@@ -1,77 +1,111 @@
-var targetURL;
+/* Paeser API Key */
+var token = "f455c88eb6fc4e66d79f02f576890710518f5941";
+var articleLengthLimitation = 300;
 
-////RSS get
-$.jGFeed('http://feeds.feedburner.com/TheNewsLens',
-  function(feeds){
-    // Check for errors
-    if(!feeds){
-      // there was an error
-      return false;
-    }
+var isTimeForShortPost = true;
+var subscribeURLArr = ["http://chinese.engadget.com/rss.xml",
+"http://feeds.feedburner.com/TheNewsLens",
+"http://feeds.feedburner.com/TechCrunch/",
+"http://rss.cnn.com/rss/edition.rss",
+"http://www.bnext.com.tw/Feed/rss/topicslinksall"];
+var articleObjArr = [];
+var finalArticleObjArr = [];
+var isFeedFinished = false;
+var indexSite = 0;
+var indexPage = 0;
 
-    //first item's url
-    targetURL = feeds.entries[0].link;
-    
-    //Get Page here(right after got url)
-    //loadXMLDoc(targetURL);
-    getInfo(targetURL);
 
-    // do whatever you want with feeds here
-    for(var i=0; i<feeds.entries.length; i++){
-      var entry = feeds.entries[i];
-      console.log("Title: "+entry.title);
-    }   
-}, 3);
+function nowTime(){
+  var nowHours = parseTime($.now()).hour;
+  log("nowHours "+nowHours)
+  if(nowHours<9 && nowHours>17){
+    isTimeForShortPost = false;
+  }else{isTimeForShortPost = true;};
+};
+nowTime();
 
-////HTML GET
-var xmlhttp;
-var htmlCode=null;
-function loadXMLDoc(url)
-{
-  xmlhttp=null;
-  if (window.XMLHttpRequest)
-    { // code for all new browsers 
-    xmlhttp= new XMLHttpRequest() ;
-    }
-  else if (window.ActiveXObject)
-    { // code for IE5 and IE6 
-    xmlhttp= new ActiveXObject("Microsoft.XMLHTTP") ;
-    }
-  if (xmlhttp!=null)
-    {
-    xmlhttp.onreadystatechange=state_Change ;
-    xmlhttp.open("GET",url,true);
-    xmlhttp.send(null);
-    }
-  else
-    {
-    console.log("Your browser does not support XMLHTTP.");
-    }
+/* RSS get */
+function getRSSFeed(feedURL){
+  $.jGFeed(feedURL,
+    function(feeds){
+      
+      /* Check for errors */
+      if(!feeds){
+        log("Fail on Getting Feeds>> "+feedURL)
+        return false;
+      }
+      
+      /* do whatever you want with feeds here */
+      for(var i=0; i<feeds.entries.length; i++){
+        var entry = feeds.entries[i];
+        var obj = {
+          siteName:feeds.title,
+          title:entry.title,
+          url:entry.link,
+          time:entry.publishedDate
+        }
+        articleObjArr.push(obj);
+      }
+
+      /* make sure get all response of Feed */
+      if(indexSite == subscribeURLArr.length-1){
+        
+        /* Get content of each article */
+        indexPage = 0;
+        for(var i=0;i<articleObjArr.length;i++){
+          getContent(articleObjArr[i]);
+        }
+      }
+      indexSite++;
+
+  }, 5);
+};
+
+function startRequestFeed(){
+  indexSite = 0;
+  for(var i=0;i<subscribeURLArr.length;i++){
+    getRSSFeed(subscribeURLArr[i]);
+  }
+};
+
+/* Readability API to get content and word count */
+function getContent(obj) {
+  $.getJSON("https://www.readability.com/api/content/v1/parser?url="+ obj.url +"&token="+token+"&callback=?",
+    function (data) {
+      obj.content = data.content;
+      obj.wordCount = data.word_count;
+
+      /* Make sure get all content */
+      if(indexPage == articleObjArr.length-1){
+        getFinalArr();
+      }
+      indexPage++;
+  });
 }
 
-function state_Change()
-{
-  if (xmlhttp.readyState==4 && xmlhttp.status==200)
-  { // 4 = "loaded", 200 = OK 
-    
-    //parse text to DOM object
-    htmlCode = $.parseHTML( xmlhttp.responseText );
-    
-    $.each(htmlCode, function( index, value ) {
-      console.log( index + ": " + value );
-    });
-  }else{
-    console.log("readyState: "+xmlhttp.readyState);
+/* filter long story and sort by publish time */
+function getFinalArr () {
+  /* Filter long articles */
+  /**
+  
+    TODO:
+    - check time to filter or not
+  
+   */
+  finalArticleObjArr = articleObjArr.filter(function(item){
+    return item.wordCount < articleLengthLimitation;
+  });
+  /* Sort by publish time */
+  finalArticleObjArr.sort(function(a, b){
+    var c = new Date(a.time).getTime();
+    var d = new Date(b.time).getTime();
+    return d-c
+  });
+
+  for(var i=0;i<finalArticleObjArr.length;i++){
+    finalArticleObjArr[i].index = i;
+    log(finalArticleObjArr[i].index+". "+finalArticleObjArr[i].time+"/"+finalArticleObjArr[i].title+"("+finalArticleObjArr[i].wordCount+")");
   }
 }
 
-//Readability API
-var token = "f455c88eb6fc4e66d79f02f576890710518f5941";
-function getInfo(url) {
-    $.getJSON("https://www.readability.com/api/content/v1/parser?url="+ url +"&token="+token+"&callback=?",
-    function (data) {
-        console.log(data);
-        $("#load").append(data.content);
-    });
-}
-
+startRequestFeed();
