@@ -42,7 +42,7 @@ function getRSSFeed(feedURL){
           siteName:feeds.title,
           title:entry.title,
           url:entry.link,
-          time:entry.publishedDate
+          time:entry.publishedDate.slice(0,25)
         }
         articleObjArr.push(obj);
       }
@@ -85,11 +85,13 @@ function getContent(obj) {
 
 /* filter long story and sort by publish time */
 function getFinalArr () {
-  for(var i=0;i<articleObjArr.length;i++){
-    log(articleObjArr[i].time+"/"+articleObjArr[i].title+"("+articleObjArr[i].wordCount+")");
-  }
-  log("--------")
   /* Filter long articles */
+  /**
+  
+    TODO:
+    - check time to filter or not
+  
+   */
   finalArticleObjArr = articleObjArr.filter(function(item){
     return item.wordCount < articleLengthLimitation;
   });
@@ -104,6 +106,9 @@ function getFinalArr () {
     finalArticleObjArr[i].index = i;
     log(finalArticleObjArr[i].index+". "+finalArticleObjArr[i].time+"/"+finalArticleObjArr[i].title+"("+finalArticleObjArr[i].wordCount+")");
   }
+
+  renderLayout();
+
 }
 
 startRequestFeed();

@@ -32,25 +32,41 @@
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="static/swiper-do-swipe.css">
         <link rel="stylesheet" type="text/css" href="css/index.css">
-        <script type="text/javascript" src="js/jquery.jgfeed.js"></script>
+        
         <title>Hello World</title>
     </head>
     <body>
-        <div class="app">
-            <h1>Apache Cordova</h1>
-            <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div>
-            <div id="rss">Content</div>
-            <div id="load">Content</div>
+
+        <div id="container">
+            <section>
+                <div id="item">
+                    <h1 id="title"></h1>
+                    <p id="info"></p>
+                    <div id="content"></div>
+                </div>
+            </section>
         </div>
 
+        <div id="browser">
+            <div id="top">
+                <button id="backBtn">Back</button>
+            </div>
+            <div id="loader"></div>
+        </div>
+       <!-- script import -->
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
         <script type="text/javascript" src="js/jquery.jgfeed.js"></script>
+        <script type="text/javascript" src="static/swiper-do-swipe.js"></script>
+        <script type="text/javascript" src="static/swiper-do-swipe-perspective.js"></script>
 
+        <script type="text/javascript" src="js/Utility.js"></script>
+        <script type="text/javascript" src="js/browser.js"></script>
+        <script type="text/javascript" src="js/layout.js"></script>
+        <script type="text/javascript" src="js/initialContent.js"></script>
+        
         <script type="text/javascript" src="js/index.js"></script>
     </body>
 </html>

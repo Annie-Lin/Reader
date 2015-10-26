@@ -24,7 +24,7 @@ body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
-    background-color:#E4E4E4;
+/*    background-color:#E4E4E4;
     background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
@@ -35,14 +35,15 @@ body {
         color-stop(0, #A7A7A7),
         color-stop(0.51, #E4E4E4)
     );
-    background-attachment:fixed;
+    background-attachment:fixed;*/
     font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
     font-size:12px;
     height:100%;
     margin:0px;
     padding:0px;
-    text-transform:uppercase;
+    /*text-transform:uppercase;*/
     width:100%;
+    background-color: #e6e6e6;
 }
 
 /* Portrait layout (default) */
@@ -71,7 +72,7 @@ body {
 
 h1 {
     font-size:24px;
-    font-weight:normal;
+    /*font-weight:normal;*/
     margin:0px;
     overflow:visible;
     padding:0px;
@@ -112,4 +113,41 @@ h1 {
 .blink {
     animation:fade 3000ms infinite;
     -webkit-animation:fade 3000ms infinite;
+}
+
+/* card style */
+#container{
+    /*display: none;*/
+}
+#item{
+    display: block;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    /*padding-bottom: 35px;*/
+    /*text-align: center;*/
+    background-color: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px black;
+    padding: 10px 10px;
+}
+#title{
+    text-align: left;
+}
+#info{
+    color:#4c4c4c;
+    text-align: center;
+}
+#content{
+    font-size: 14px;
+}
+img{
+    width: 95%;
+    text-align: center;
+}
+iframe{
+    width:95%;
+    height: auto;
 }
