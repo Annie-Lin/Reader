@@ -1,13 +1,15 @@
 /* Paeser API Key */
 var token = "f455c88eb6fc4e66d79f02f576890710518f5941";
-var articleLengthLimitation = 300;
+var articleLengthLimitation = 150;
 
 var isTimeForShortPost = true;
+
 var subscribeURLArr = ["http://chinese.engadget.com/rss.xml",
 "http://feeds.feedburner.com/TheNewsLens",
 "http://feeds.feedburner.com/TechCrunch/",
-"http://rss.cnn.com/rss/edition.rss",
-"http://www.bnext.com.tw/Feed/rss/topicslinksall"];
+"http://www.bnext.com.tw/Feed/rss/topicslinksall",
+"http://feeds.feedburner.com/inside-blog-taiwan"];
+var numberOfRSSFeedRequest = 10;
 var articleObjArr = [];
 var finalArticleObjArr = [];
 var isFeedFinished = false;
@@ -17,10 +19,14 @@ var indexPage = 0;
 
 function nowTime(){
   var nowHours = parseTime($.now()).hour;
-  log("nowHours "+nowHours)
+  /* short post time : am9-pm5 */
   if(nowHours<9 && nowHours>17){
-    isTimeForShortPost = false;
-  }else{isTimeForShortPost = true;};
+    isTimeForShortPost = true;
+  }else{isTimeForShortPost = false;};
+
+  /* Log on screen */
+  $("#status").hide(); /* display switcher */
+  $("#status #infoContent").append("isShort:"+isTimeForShortPost+" / ");
 };
 nowTime();
 
@@ -55,13 +61,17 @@ function getRSSFeed(feedURL){
         for(var i=0;i<articleObjArr.length;i++){
           getContent(articleObjArr[i]);
         }
+
+        /* Log on screen */
+        $("#status #infoContent").append("RSS All:"+articleObjArr.length+" / ");
       }
       indexSite++;
 
-  }, 5);
+  }, numberOfRSSFeedRequest);
 };
 
 function startRequestFeed(){
+  $("#container").hide();
   indexSite = 0;
   for(var i=0;i<subscribeURLArr.length;i++){
     getRSSFeed(subscribeURLArr[i]);
@@ -86,15 +96,14 @@ function getContent(obj) {
 /* filter long story and sort by publish time */
 function getFinalArr () {
   /* Filter long articles */
-  /**
+  if(isTimeForShortPost == true){
+    finalArticleObjArr = articleObjArr.filter(function(item){
+      return item.wordCount < articleLengthLimitation;
+    });
+  }else{
+    finalArticleObjArr = articleObjArr;
+  }
   
-    TODO:
-    - check time to filter or not
-  
-   */
-  finalArticleObjArr = articleObjArr.filter(function(item){
-    return item.wordCount < articleLengthLimitation;
-  });
   /* Sort by publish time */
   finalArticleObjArr.sort(function(a, b){
     var c = new Date(a.time).getTime();
@@ -106,9 +115,13 @@ function getFinalArr () {
     finalArticleObjArr[i].index = i;
     log(finalArticleObjArr[i].index+". "+finalArticleObjArr[i].time+"/"+finalArticleObjArr[i].title+"("+finalArticleObjArr[i].wordCount+")");
   }
-
+  
+  /* Log on screen */
+  $("#status #infoContent").append("RSS List:"+finalArticleObjArr.length);
+  
+  $("#container").show();
+  $("#loading").hide();
   renderLayout();
-
 }
 
 startRequestFeed();
