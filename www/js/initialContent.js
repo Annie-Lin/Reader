@@ -25,7 +25,7 @@ function nowTime(){
   }else{isTimeForShortPost = false;};
 
   /* Log on screen */
-  $("#status").hide(); /* display switcher */
+  // $("#status").hide(); /* display switcher */
   $("#status #infoContent").append("isShort:"+isTimeForShortPost+" / ");
 };
 nowTime();
@@ -80,18 +80,23 @@ function startRequestFeed(){
 
 /* Readability API to get content and word count */
 function getContent(obj) {
-  $.getJSON("https://www.readability.com/api/content/v1/parser?url="+ obj.url +"&token="+token+"&callback=?",
-    function (data) {
-      obj.content = data.content;
-      obj.wordCount = data.word_count;
-
-      /* Make sure get all content */
-      if(indexPage == articleObjArr.length-1){
-        getFinalArr();
-      }
-      indexPage++;
+  $.getJSON("https://www.readability.com/api/content/v1/parser?url="+ obj.url +"&token="+token+"&callback=?")
+  .done(function(data){
+    obj.content = data.content;
+    obj.wordCount = data.word_count;
+  })
+  .fail(function() {
+    /* It's not work for some reason.... */
+    // console.log( "error" );
+  })
+  .always(function() {
+    // console.log( "complete" );
+    indexPage++;
+    if(indexPage == articleObjArr.length-1){
+      getFinalArr();
+    }
   });
-}
+};
 
 /* filter long story and sort by publish time */
 function getFinalArr () {
@@ -113,7 +118,7 @@ function getFinalArr () {
 
   for(var i=0;i<finalArticleObjArr.length;i++){
     finalArticleObjArr[i].index = i;
-    log(finalArticleObjArr[i].index+". "+finalArticleObjArr[i].time+"/"+finalArticleObjArr[i].title+"("+finalArticleObjArr[i].wordCount+")");
+    //log(finalArticleObjArr[i].index+". "+finalArticleObjArr[i].time+"/"+finalArticleObjArr[i].title+"("+finalArticleObjArr[i].wordCount+")");
   }
   
   /* Log on screen */

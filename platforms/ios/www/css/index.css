@@ -165,6 +165,9 @@ h1 {
 #content{
     font-size: 16px;
 }
+#original_link{
+    font-size: 10px;
+}
 img{
     width: 95%;
     text-align: center;
